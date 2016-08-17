@@ -5,18 +5,19 @@ import os
 
 class DeitaCronograma():
     """DeitaCronograma prepara a planilha para o planejamento fim da obra"""
-    def __init__(self, workbook):
+    def __init__(self, workbook, margin=0.7):
         warnings.filterwarnings("ignore")
         self.workbook = workbook
         self.titleRow = None
         self.lastRow = None
+        self.margin = margin
         self.wb = openpyxl.load_workbook(os.path.join(os.getcwd(), workbook + '.xlsx'))
 
     def __getTitleRow(self):
         sheet = self.wb.get_sheet_by_name('PLANILHA BASE')
-        col = sheet.columns[0]
+        col = sheet.columns[5]
         for cellObj in col:
-            if cellObj.value == 'Descrição':
+            if cellObj.value == 'Total':
                 self.titleRow = cellObj.row
                 break
 
@@ -54,7 +55,7 @@ class DeitaCronograma():
         for row in range(self.titleRow + 1, self.lastRow + 1):
             col6Val = sheet.cell(row=row, column=6).value
             if isinstance(col6Val, int) or (type(col6Val) == str and col6Val[0] == "="):
-                sheet.cell(row=row, column=7).value = '=F' + str(row) + '*0.7'
+                sheet.cell(row=row, column=7).value = '=F' + str(row) + '*' + str(self.margin)
             row += 1
 
     def __writeSaldoAPagarFormula(self):
